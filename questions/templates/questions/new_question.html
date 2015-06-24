@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block head_add %}
+<link rel="stylesheet" type="text/css" href="/static/ask_boldyrev_question.css">
+{% endblock head_add %}
+{% block title %}
+Ask Boldyrev - Ask new question 
+{% endblock title %}
+{% block main_block %} 
+<form action="{% url 'new_question' %}" method="post">
+{% csrf_token %}
+<textarea style="width:600px; height:100px; resize:none; background-color: #fff3d4; border: 1px dashed #603a09; font-size: 16pt; color: #603a09" name="new_question_title" placeholder="Define the title here..." required></textarea>
+<textarea style="width:600px; height:300px; resize:none; background-color: #fff3d4; border: 1px dashed #603a09; font-size: 14pt; color: #603a09" name="new_question_text" placeholder="Type your question here..." required></textarea>
+tags: 
+<input type="text" name="new_question_tags" />
+<button name="new_question_send_btn" class="new_question_send_btn">Send</button>
+</form>
+
+{% endblock main_block %} 

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block head_add %}
+<link rel="stylesheet" type="text/css" href="/static/ask_boldyrev_question.css">
+{% endblock head_add %}
+{% block title %}
+Ask Boldyrev - {{ question.question_title }}
+{% endblock title %}
+{% block main_block %} 
+</table>
+	<table style="width:100%">
+	<tr>
+	<td style="width:70%; max-width:430px; word-wrap: break-word; text-align:left"> 
+	<span style="font-size:8pt; font-color:#444444;">{{ question.pub_date.ctime }}</span>
+	<br/>
+	<h1 class="big_question_h">{{ question.question_title }}</h1>
+	</td>
+	<td style="text-align:center" rowspan="2">  
+	<img class="question_author_avatar" src="{{ question.author.person.avatar }}" />
+	<br/>
+	<span style="font-weight: bold">{{ question.author.username }}</span>
+	</td>
+	</tr>
+	<tr>
+	<td style=" max-width:430px; word-wrap: break-word;">
+	<span style="font-size:14pt; color: #603a09;">{{ question.question_text }}</span>
+	</td>
+	</tr>
+	<tr>
+	<td style="width:70%; max-width:430px; word-wrap: break-word; text-align:left" rowspan="2">
+	tags: 
+	{% for tag in question.tag_set.all %} 
+	<a href="{% url 'tag' tag.tag_text %}" class="tags">{{ tag.tag_text }}</a>
+	{% endfor %}
+	</td>
+	<td  style="text-align:right; vertical-align:bottom;"><span style="font-size:9pt">Comments: {{ question.comments_number }}</span>
+	</td>
+	</tr>
+	<tr>
+	<td style="text-align:right; vertical-align:bottom;">
+	<form action="{% url 'question_list' %}" method="post">
+	{% csrf_token %}
+	rating:
+	{% if request.user.is_authenticated and not request.user in question.users_liked.objects.all %}
+	<button class="rating_up" name="rating.{{ question.id }}.up"></button>
+	{% else %}
+	<button class="rating_up_disabled" disabled="true" name="rating.{{ question.id }}.up"></button>
+	{% endif %}
+	{{ question.rating  }}
+	{% if request.user.is_authenticated  and not request.user in question.users_disliked.objects.all %}
+	<button class="rating_down" name="rating.{{ question.id }}.down"></button>
+	{% else %}
+	<button class="rating_down_disabled" disabled="true" name="rating.{{ question.id }}.down"></button>
+	{% endif %}
+	</form>
+	</td>
+	</tr>
+	</table>
+</div>
+
+<div class="big_comments_div">
+{% if question.comments_number != 0 %}
+Comments:
+{% else %}
+No comments yet.
+{% endif %}
+{% for comment in comments %}
+	<div class="comment_div">
+	<table width="100%">
+	<tr>
+	<td rowspan="2" style="width:1px; text-align: center">
+	<img class="comment_author_avatar" src="{{ question.author.person.avatar }}" />
+	<br/>
+	<span style="font-weight: bold">{{ question.author.username }}</span>
+	</td>
+	<td>
+	{{ comment.comment_text }}
+	</td>
+	</tr>
+	<tr>
+	<td>
+	<div class="comments_likes_div">
+	<form action="{% url 'question' question.id %}" method="post">
+	{% csrf_token %}
+	<table width="100%">
+	<tr>
+	<td style="text-align: center;">
+	{% if comment.is_right %}
+		<span style="font-weight: bold">Correct</span>
+	{% else %}
+		{% if question.author == request.user %}
+			<button name="make_correct" value="1" type="submit">Choose correct</button>
+		{% endif %}
+	{% endif %}
+	</td>
+	<td style="width:200px">
+	{{ comment.pub_date.ctime }}
+	</td>
+	<td style="width:150px">
+	rating:
+	{% if request.user.is_authenticated and not request.user in comment.users_liked.objects.all %}
+	<button class="rating_up" name="comment.{{ comment.id }}.up"></button>
+	{% else %}
+	<button class="rating_up_disabled" disabled="true" name="comment.{{ comment.id }}.up"></button>
+	{% endif %}
+	{{ comment.rating  }}
+	{% if request.user.is_authenticated  and not request.user in comment.users_disliked.objects.all %}
+	<button class="rating_down" name="comment.{{ comment.id }}.down"></button>
+	{% else %}
+	<button class="rating_down_disabled" disabled="true" name="rating.{{ question.id }}.down"></button>
+	{% endif %}
+	</td>
+	</tr>
+	</table>
+	</form>
+	</div>
+	</td>
+	</tr>
+	</table>
+	</div>
+{% endfor %}
+{% if page_list and page_list|length != 1 %} <!-- draw paginator --!>
+	<form action="{{ request.path }}" method="POST">
+	{% csrf_token %}
+	<table>
+	<tr>
+	<td width="150px">
+	{% if prev_page %}
+	<button name="goto_page" value="{{ prev_page }}">Previous page</button>
+	{% endif %}
+	</td>
+	<td style="text-align: center;" width="400px">
+	{% for p in page_list %}
+		{% if p != page %}
+			<button sytyle="font-size:10pt" name="goto_page" value="{{ p }}">{{ p }}</button>
+		{% else %}
+			<button sytyle="font-size:14pt" disabled="true" name="goto_page" value="{{ p }}">{{ p }}</button>
+		{% endif %}
+	{% endfor %}
+	<td width="150px">
+	{% if next_page %}
+	<button name="goto_page" value="{{ next_page }}">Next page</button>
+	{% endif %}
+	</td>
+	</tr>
+	</table>
+	</form>
+{% endif %}
+
+{% if request.user.is_authenticated %} 
+<form action="{% url 'question' question.id %}" method="post">
+{% csrf_token %}
+<textarea name="new_comment_text" placeholder="Type your comment here..." class="new_comment_textarea" required></textarea>
+<button name="comment_send_btn" class="new_comment_send_btn">Send</button>
+</form>
+{% endif %}
+{% endblock main_block %}
+

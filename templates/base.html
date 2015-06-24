@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="/static/ask_boldyrev_main.css">
+{% block head_add %}
+{% endblock head_add %}
+<title>{% block title %}Ask Boldyrev{% endblock %}</title>
+<script type="text/javascript">
+function body_loaded() {
+{% block body_loaded_script %}
+{% endblock body_loaded_script %}
+}
+</script>
+</head>
+<body onLoad="body_loaded()">
+<div style="width:100%" align="center">
+<div id="comprehensive_div" align="left">
+
+<div id="header_div">
+{% block header_block %}
+<table style="width:100%">
+<tr style="height:120px">
+<td class="header_logo">
+<a href="{% url 'question_list' %}">
+<img class="header_logo" alt="LOGO" src="/static/questions/pic/logo.png">
+</a>
+</td>
+<td class="header_search">
+<form action="{% url 'question_list' %}" method="GET">
+<input type="text" name="q" class="header_search" placeholder="Search questions here" required/>
+<br />
+<button class="header_search" type="submit">Look it up</button>
+</form>
+</td>
+<td class="header_user">
+{% block user_block %}
+{% if request.user.is_authenticated %}
+<!-- logined -->
+<table width="100%">
+<tr>
+<td width="100px">
+<form action="{% url 'new_question' %}" method="POST">
+{% csrf_token %}
+<button style="width: 100%; height: 100px; font-size: 14pt;" type="submit" name="new_question_button">Ask!</button>
+</form>
+</td>
+<td>
+<form action="{{ request.path }}" method="POST">
+{% csrf_token %}
+<img class="self_avatar" src="{{ request.user.person.avatar }}" />
+<span class="self_nick">{{ request.user.username }}</span>
+<br />
+<button class="log_out" name="log_out" type="submit">Log out</button>
+<br/>
+</form>
+<form action="{% url "profile" %}" method="POST">
+{% csrf_token %}
+<button name="profile" type="submit">Profile</button>
+</form>
+<div slyle="clear:both"></div>
+</td>
+</tr>
+</table>
+{% else %}
+<!-- not logined -->
+<span style="font-size:9pt">
+{% if login_msg %}
+{{ login_msg }}
+{% else %}
+Not a member? 
+<a href="{% url 'register' %}">
+Register!
+</a>
+{% endif %}
+</span>
+<form action="{{ request.path }}" method="POST">
+{% csrf_token %}
+<input class="login" type="text" name="login" placeholder="Login" required />
+<input class="password" type="password" name="password" placeholder="password" />
+<button class="log_in" type="submit">Log in</button>
+</form>
+{% endif %}
+{% endblock user_block %}
+</td>
+</tr>
+</table>
+{% endblock %}
+</div>
+
+<div id="main_div">
+<div style="padding:10px 20px">
+{% if status_message %}
+<div style="color: #603a09; font-size: 12pt; font-style: italic;" >{{ status_message }}</div>
+<br/>
+{% endif %}
+{% block main_block %}
+main_block
+{% endblock %}
+</div>
+</div>
+
+<div id="right_div">
+<div class="tags">
+{% if not popular_tags %}
+<span class="popular_tags">No tags!</span><br />
+{% else %}
+<span class="popular_tags">Tags:</span><br />
+{% for tag in popular_tags %}
+	<a href="{% url 'tag' tag.tag_text %}" class="tags">{{ tag }}</a>
+{% endfor %}
+
+
+{% endif %}
+</div>
+<div class="best_members">
+{% if not best_members %}
+<span class="best_members">No best members!</span><br />
+{% else %}
+<span class="best_members">Best members:</span><br />
+{% for member in best_members %}
+	<div style="">{{member}}</div>
+{% endfor %}
+
+
+{% endif %}
+</div>
+</div>
+
+<div style="clear: left"></div>
+
+<div id="footer_div">
+<div style="margin:5px">
+{% block footer_block %}
+Ask_Boldyrev  2015
+{% endblock %}
+</div>
+</div>
+
+</div>
+</div>
+</body>
+</html>

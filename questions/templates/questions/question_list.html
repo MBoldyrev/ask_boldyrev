@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block head_add %}
+<link rel="stylesheet" type="text/css" href="/static/ask_boldyrev_question_list.css">
+{% endblock head_add %}
+{% block body_loaded_script %}
+<!--sort_param = {{sort_param}}; sort_direction = {{sort_direction}} --!>
+{% if sort_param == "pub_date" %}
+document.getElementById("select_sort_param").selectedIndex = 0;
+{% endif %}
+{% if sort_param == "rating" %}
+document.getElementById("select_sort_param").selectedIndex = 1;
+{% endif %}
+{% if sort_direction == "downwards" %}
+document.getElementById("select_sort_direction").selectedIndex = 0;
+{% endif %}
+{% if sort_direction == "upwards" %}
+document.getElementById("select_sort_direction").selectedIndex = 1;
+{% endif %}
+{% endblock body_loaded_script %}
+{% block main_block %}
+{% if questions %}
+	<div style="text-align:right">
+	<form action="{{ request.path }}" method="POST">
+	{% csrf_token %}
+	sorting:
+	<!-- be here two lists: sort param and direction --!>
+	<select name="sort_param" id="select_sort_param">
+	<option value="pub_date">by publication date</option>
+	<option value="rating">by rating</option>
+	</select>
+	<select name="sort_direction" id="select_sort_direction">
+	<option value="downwards">downwards</option>
+	<option value="upwards">upwards</option>
+	</select>
+	<button type="submit" style="">sort</button> 
+	</form>
+	</div>
+{% for question in questions %}
+	<br />
+	<div class="question">
+	<table style="width:100%">
+	<tr>
+	<td style="width:70%; text-align:left; max-width:430px; word-wrap: break-word; text-align:left"> 
+	<span style="font-size:8pt; font-color:#444444;">{{ question.pub_date.ctime }}</span>
+	<br/>
+	<a href="{% url 'question' question.id %}"><span class="question">{{ question.question_title }}</span></a>
+	</td>
+	<td style="text-align:center" rowspan="2">
+	<img class="question_author_avatar" src="{{ question.author.person.avatar }}" />
+	<br/>
+	<span style="font-weight: bold">{{ question.author.username }}</span>
+	</td>
+	</tr>
+	<tr>
+	<td style="max-width:430px; word-wrap: break-word; text-align:left">
+	<span style="">{{ question.question_text }}</span>
+	</td>
+	</tr>
+	<tr>
+	<td style="max-width:420px; width:70%; word-wrap: break-word; text-align:left" rowspan="2">
+	tags: 
+	{% for tag in question.tag_set.all %} 
+	<a href="{% url 'tag' tag.tag_text %}" class="tags">{{ tag.tag_text }}</a>
+	{% endfor %}
+	</td>
+	<td  style="text-align:right; vertical-align:bottom;"><span style="font-size:9pt">Comments: {{ question.comments_number }}</span>
+	</td>
+	</tr>
+	<tr>
+	<td style="text-align:right; vertical-align:bottom;">
+	<form action="{% url 'question_list' %}" method="post">
+	{% csrf_token %}
+	rating:
+	{% if request.user.is_authenticated and not request.user in question.users_liked.objects.all %}
+	<button class="rating_up" name="rating.{{ question.id }}.up"></button>
+	{% else %}
+	<button class="rating_up_disabled" disabled="true" name="rating.{{ question.id }}.up"></button>
+	{% endif %}
+	{{ question.rating  }}
+	{% if request.user.is_authenticated  and not request.user in question.users_disliked.objects.all %}
+	<button class="rating_down" name="rating.{{ question.id }}.down"></button>
+	{% else %}
+	<button class="rating_down_disabled" disabled="true" name="rating.{{ question.id }}.down"></button>
+	{% endif %}
+	</form>
+	</td>
+	</tr>
+	</table>
+	</div>
+{% endfor %}
+	{% if page_list and page_list|length != 1 %} <!-- draw paginator --!>
+		<form action="{{ request.path }}" method="POST">
+		{% csrf_token %}
+		<table>
+		<tr>
+		<td width="150px">
+		{% if prev_page_offset != -1 %}
+		<button name="offset" value="{{ prev_page_offset }}">Previous page</button>
+		{% endif %}
+		</td>
+		<td style="text-align: center;" width="400px">
+		{% for po in page_list %}
+			{% if po != offset %}
+				<button sytyle="font-size:10pt" name="offset" value="{{ po }}">{{ forloop.counter }}</button>
+			{% else %}
+				<button sytyle="font-size:14pt" disabled="true" name="offset" value="{{ po }}">{{ forloop.counter }}</button>
+			{% endif %}
+		{% endfor %}
+		<td width="150px">
+		{% if next_page_offset and next_page_offset != -1 %}
+		<button name="offset" value="{{ next_page_offset }}">Next page</button>
+		{% endif %}
+		</td>
+		</tr>
+		</table>
+
+		</form>
+	{% endif %}
+{% else %}
+<p>No questions are available.</p>
+{% endif %}
+{% endblock main_block %}

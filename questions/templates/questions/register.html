@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block head_add %}
+{% endblock head_add %}
+{% block title %}
+Ask Boldyrev - Register
+{% endblock title %}
+{% block main_block %} 
+{{ register_status_msg }}
+<form action="{% url 'register' %}" method="post">
+{% csrf_token %}
+<table>
+<tr>
+<td>
+Login:
+</td>
+<td> 
+<input type="text" name="register_login" required/>
+</td>
+</tr>
+<tr>
+<td>
+Email:
+</td>
+<td> 
+<input type="text" name="register_email" required/>
+</td>
+</tr>
+<tr>
+<td>
+NickName:
+</td>
+<td> 
+<input type="text" name="register_nickname" required/>
+</td>
+</tr>
+<tr>
+<td> 
+Password: 
+</td>
+<td> 
+<input type="password" name="register_password" required/>
+</td>
+</tr>
+<tr>
+<td> 
+Repeat password: 
+</td>
+<td> 
+<input type="password" name="register_password_repeat" required/>
+</td>
+</tr>
+<tr>
+<td> 
+Choose avatar: 
+</td>
+<td> 
+<input type="file" accept="image/jpeg,image/png" name="register_avatar" />
+</td>
+</tr>
+</table> 
+<br/>
+<button type="submit" name="send" value="sent">Apply</button>
+</form>
+
+{% endblock main_block %} 
