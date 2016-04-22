@@ -20,8 +20,7 @@ document.getElementById("select_sort_direction").selectedIndex = 1;
 {% block main_block %}
 {% if questions %}
 	<div style="text-align:right">
-	<form action="{{ request.path }}" method="POST">
-	{% csrf_token %}
+	<form action="{{ request.path }}" method="GET">
 	sorting:
 	<!-- be here two lists: sort param and direction --!>
 	<select name="sort_param" id="select_sort_param">
@@ -89,8 +88,13 @@ document.getElementById("select_sort_direction").selectedIndex = 1;
 	</div>
 {% endfor %}
 	{% if page_list and page_list|length != 1 %} <!-- draw paginator --!>
-		<form action="{{ request.path }}" method="POST">
-		{% csrf_token %}
+		<form method="GET">
+		{% if sort_direction %}
+			<input type="hidden" name="sort_direction" value="{{ sort_direction }}"/>
+		{% endif %}
+		{% if sort_param %}
+			<input type="hidden" name="sort_param" value="{{ sort_param }}"/>
+		{% endif %}
 		<table>
 		<tr>
 		<td width="150px">
@@ -113,7 +117,6 @@ document.getElementById("select_sort_direction").selectedIndex = 1;
 		</td>
 		</tr>
 		</table>
-
 		</form>
 	{% endif %}
 {% else %}

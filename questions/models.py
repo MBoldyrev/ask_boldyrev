@@ -31,12 +31,12 @@ class Question(models.Model):
 	#def get_votes_number(self):
 	#	return self.likes_number + self.dislikes_number
 	def can_like(self, user):
-		if( user in self.users_liked.all() ):
+		if( not user in self.users_liked.all() ):
 			return True
 		else:
 			return False
 	def can_dislike(self, user):
-		if( user in self.users_disliked.all() ):
+		if( not user in self.users_disliked.all() ):
 			return True
 		else:
 			return False
@@ -76,9 +76,9 @@ class Comment(models.Model):
 		else:
 			return False
 	def save(self, *args, **kwargs):
-		#self.question.count_comments()
+		self.question.count_comments()
 		super(Comment, self).save(*args, **kwargs)
-		#self.rating = self.get_rating()
+		self.rating = self.get_rating()
 		super(Comment, self).save(*args, **kwargs)
 
 class Tag(models.Model):

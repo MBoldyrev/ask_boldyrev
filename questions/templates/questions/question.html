@@ -22,7 +22,7 @@ Ask Boldyrev - {{ question.question_title }}
 	</tr>
 	<tr>
 	<td style=" max-width:430px; word-wrap: break-word;">
-	<span style="font-size:14pt; color: #603a09;">{{ question.question_text }}</span>
+	<span style="font-size:14pt; color: #603a09;white-space: pre-wrap;">{{ question.question_text }}</span>
 	</td>
 	</tr>
 	<tr>
@@ -37,16 +37,16 @@ Ask Boldyrev - {{ question.question_title }}
 	</tr>
 	<tr>
 	<td style="text-align:right; vertical-align:bottom;">
-	<form action="{% url 'question_list' %}" method="post">
+	<form action="{{ request.path }}" method="post">
 	{% csrf_token %}
 	rating:
-	{% if request.user.is_authenticated and not request.user in question.users_liked.objects.all %}
+	{% if request.user.is_authenticated and not request.user in question.users_liked.select_related %}
 	<button class="rating_up" name="rating.{{ question.id }}.up"></button>
 	{% else %}
 	<button class="rating_up_disabled" disabled="true" name="rating.{{ question.id }}.up"></button>
 	{% endif %}
 	{{ question.rating  }}
-	{% if request.user.is_authenticated  and not request.user in question.users_disliked.objects.all %}
+	{% if request.user.is_authenticated  and not request.user in question.users_disliked.select_related %}
 	<button class="rating_down" name="rating.{{ question.id }}.down"></button>
 	{% else %}
 	<button class="rating_down_disabled" disabled="true" name="rating.{{ question.id }}.down"></button>

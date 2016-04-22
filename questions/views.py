@@ -138,7 +138,7 @@ def check_login(request):
 
 def check_sort_and_paginator(request, questions):
 	"""
-	Check for POST params to query
+	Check for GET params to query
 	question list sort functions
 	and pages
 	Returns an update for vardict
@@ -147,17 +147,17 @@ def check_sort_and_paginator(request, questions):
 	sort_param = 'pub_date'
 	sort_direction = 'downwards'
 	question_count = questions.count()
-	if(request.method == "POST"):
-		if("offset" in request.POST.keys()):
+	if(request.method == "GET"):
+		if("offset" in request.GET.keys()):
 			try:
-				offset = int( request.POST["offset"] )
+				offset = int( request.GET["offset"] )
 			except:
 				offset = 0
-		if("sort_param" in request.POST.keys()):
-			sort_param = request.POST["sort_param"]
-		if("sort_direction" in request.POST.keys()):
-			sort_direction = request.POST["sort_direction"]
-		for key in request.POST.keys():
+		if("sort_param" in request.GET.keys()):
+			sort_param = request.GET["sort_param"]
+		if("sort_direction" in request.GET.keys()):
+			sort_direction = request.GET["sort_direction"]
+		for key in request.GET.keys():
 			if key[:7] == "rating.":
 				if not request.user.is_authenticated(): break
 				r = re.search("rating\.([0-9]*)\.(.*)", key).groups()
