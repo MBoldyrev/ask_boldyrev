@@ -14,12 +14,13 @@ def question_list(request):
 def question(request, question_id):
 	question = get_object_or_404(Question, pk=question_id)
 	page = 1
-	if(request.method == "POST"):
-		if("goto_page" in request.POST.keys()):
+	if(request.method == "GET"):
+		if("comments_page" in request.GET.keys()):
 			try:
-				page = int( request.POST["goto_page"] )
+				page = int( request.GET["comments_page"] )
 			except:
 				page = 1
+	if(request.method == "POST"):
 		if("new_comment_text" in request.POST.keys() and len(request.POST["new_comment_text"]) > 0):
 			from django.utils import timezone
 			new_comment = Comment(

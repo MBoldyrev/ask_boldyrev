@@ -119,26 +119,25 @@ No comments yet.
 	</div>
 {% endfor %}
 {% if page_list and page_list|length != 1 %} <!-- draw paginator --!>
-	<form action="{{ request.path }}" method="POST">
-	{% csrf_token %}
+	<form action="{{ request.path }}" method="GET">
 	<table>
 	<tr>
 	<td width="150px">
 	{% if prev_page %}
-	<button name="goto_page" value="{{ prev_page }}">Previous page</button>
+	<button name="comments_page" value="{{ prev_page }}">Previous page</button>
 	{% endif %}
 	</td>
 	<td style="text-align: center;" width="400px">
 	{% for p in page_list %}
 		{% if p != page %}
-			<button sytyle="font-size:10pt" name="goto_page" value="{{ p }}">{{ p }}</button>
+			<button sytyle="font-size:10pt" name="comments_page" value="{{ p }}">{{ p }}</button>
 		{% else %}
-			<button sytyle="font-size:14pt" disabled="true" name="goto_page" value="{{ p }}">{{ p }}</button>
+			<button sytyle="font-size:14pt" disabled="true" name="comments_page" value="{{ p }}">{{ p }}</button>
 		{% endif %}
 	{% endfor %}
 	<td width="150px">
 	{% if next_page %}
-	<button name="goto_page" value="{{ next_page }}">Next page</button>
+	<button name="comments_page" value="{{ next_page }}">Next page</button>
 	{% endif %}
 	</td>
 	</tr>
